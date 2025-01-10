@@ -15,17 +15,39 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    private final AuthenticationSuccessHandler authenticationSuccessHandler;
+    private final AuthenticationSuccessHandler successUserHandler;
+
     private final UserDetailsService userDetailsService;
 
     @Autowired
-    public WebSecurityConfig(AuthenticationSuccessHandler authenticationSuccessHandler, UserDetailsService userDetailsService) {
-        this.authenticationSuccessHandler = authenticationSuccessHandler;
+    public WebSecurityConfig(AuthenticationSuccessHandler successUserHandler, UserDetailsService userDetailsService) {
+        this.successUserHandler = successUserHandler;
         this.userDetailsService = userDetailsService;
     }
 
+    // Настраиваем UserDetailsService аутентификацию
+    @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(getPasswordEncoder());
+    }
+
+    // Настраиваем авторизацию
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                .csrf().disable()
+                .authorizeRequests()
+                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/user/**").hasAnyRole("ADMIN", "USER")
+                .anyRequest().authenticated()
+                .and()
+                .formLogin().successHandler(successUserHandler)
+                .permitAll()
+                .and()
+                .logout()
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login")
+                .permitAll();
     }
 
     @Bean
@@ -33,19 +55,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-                .authorizeRequests()
-                .antMatchers("/login", "/logout").permitAll()
-                .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/user").hasAnyRole("USER", "ADMIN")
-                .anyRequest().authenticated()
-                .and()
-                .formLogin().successHandler(authenticationSuccessHandler)
-                .and()
-                .logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login");
-    }
 }

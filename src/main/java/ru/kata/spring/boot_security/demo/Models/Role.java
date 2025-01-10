@@ -7,22 +7,39 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "Role")
+@Table(name = "role")
 public class Role implements GrantedAuthority {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @ManyToMany(mappedBy = "roles")
-    private Set<User> users;
-
+    // Конструктор по умолчанию
     public Role() {
     }
 
+    // Конструктор с именем роли
     public Role(String name) {
         this.name = name;
+    }
+
+    // Конструктор с id
+    public Role(Long id) {
+        this.id = id;
+    }
+
+    // Конструктор с id и именем
+    public Role(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    @Override
+    public String getAuthority() {
+        return getName();
     }
 
     public Long getId() {
@@ -33,46 +50,16 @@ public class Role implements GrantedAuthority {
         this.id = id;
     }
 
-    public String getRole() {
+    public String getName() {
         return name;
     }
 
-    public void setRole(String role) {
-        this.name = role;
-    }
-
-    public Set<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<User> users) {
-        this.users = users;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
     public String toString() {
-        return "Role{" +
-                "id=" + id +
-                ", role='" + name + '\'' +
-                ", users=" + users +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Role role1 = (Role) o;
-        return Objects.equals(id, role1.id) && Objects.equals(name, role1.name) && Objects.equals(users, role1.users);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, users);
-    }
-
-    @Override
-    public String getAuthority() {
         return name;
     }
 }

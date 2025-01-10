@@ -8,20 +8,13 @@ import java.util.List;
 import java.util.Set;
 
 public interface UserService {
-
     List<User> getAllUsers();
 
-    void save(User user);
+    User getUserById(Long id);
 
-    void delete(Long id);
+    boolean saveUser(User user);
 
-    User getOne(Long id);
+    void updateUser(User updatedUser);
 
-    void update(Long id, User user);
-
-    User oneUser(Principal principal);
-
-    User createUser(User user, Set<Role> roles);
-
-    User updateUser(User user, Set<Role> roles, Long id);
+    void deleteUser(Long id);
 }
