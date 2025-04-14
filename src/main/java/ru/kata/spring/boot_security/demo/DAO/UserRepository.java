@@ -1,15 +1,17 @@
 package ru.kata.spring.boot_security.demo.DAO;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ru.kata.spring.boot_security.demo.Models.User;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
-    @Query("Select u from User u left join fetch u.roles where u.name=:username")
+public interface UserRepository {
+    void save(User user);
+    List<User> findAll();
+    User findById(Long id);
     Optional<User> findByUsername(String username);
-
+    void update(User user);
+    void deleteById(Long id);
 }

@@ -1,6 +1,5 @@
 package ru.kata.spring.boot_security.demo.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,12 +13,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin")
 public class AdminRestController {
-
     private final UserService userService;
-
     private final RoleService roleService;
 
-    @Autowired
     public AdminRestController(UserService userService, RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;
@@ -27,37 +23,36 @@ public class AdminRestController {
 
     @GetMapping("/roles")
     public ResponseEntity<List<Role>> getAllRoles() {
-        List<Role> roles = roleService.getAllRoles();
-        return new ResponseEntity<>(roles, HttpStatus.OK);
+        return ResponseEntity.ok(roleService.getAllRoles());
     }
 
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-        return new ResponseEntity<>(users, HttpStatus.OK);
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getOneUser(@PathVariable("id") Long id) {
-        User user = userService.getUserById(id);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+    public ResponseEntity<User> getOneUser(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<User> createNewUser(@RequestBody User user) {
-        userService.saveUser(user);
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+        if (userService.saveUser(user)) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(user);
+        }
+        return ResponseEntity.badRequest().build();
     }
 
-    @PatchMapping("")
+    @PatchMapping
     public ResponseEntity<User> updateUser(@RequestBody User user) {
         userService.updateUser(user);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        return ResponseEntity.ok(user);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 }

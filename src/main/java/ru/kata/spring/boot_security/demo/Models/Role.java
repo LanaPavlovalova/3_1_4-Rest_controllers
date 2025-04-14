@@ -9,7 +9,6 @@ import java.util.Set;
 @Entity
 @Table(name = "role")
 public class Role implements GrantedAuthority {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,21 +16,17 @@ public class Role implements GrantedAuthority {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    // Конструктор по умолчанию
     public Role() {
     }
 
-    // Конструктор с именем роли
     public Role(String name) {
         this.name = name;
     }
 
-    // Конструктор с id
     public Role(Long id) {
         this.id = id;
     }
 
-    // Конструктор с id и именем
     public Role(Long id, String name) {
         this.id = id;
         this.name = name;
@@ -61,5 +56,17 @@ public class Role implements GrantedAuthority {
     @Override
     public String toString() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Role role = (Role) o;
+        return Objects.equals(id, role.id) && Objects.equals(name, role.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 }
