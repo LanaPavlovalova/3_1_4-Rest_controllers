@@ -35,3 +35,6 @@ build/
 .mvn/
 .idea/
 target/
+mvnw
+mvnw.cmd
+.mvn/wrapper/
